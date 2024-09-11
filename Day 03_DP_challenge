@@ -1,0 +1,229 @@
+Ninja's Trip
+Problem statement
+
+Ninja is willing to take some time off from his training and planning a year-long tour. You are given a DAYS array consisting of ‘N’ days when Ninjas will be traveling during the year. Each Day is an integer between 1 to 365 (both inclusive). Train tickets are sold in three different ways:
+A 1-day pass is sold for 'COST'[0] coins,
+A 7-day pass is sold for 'COST'[1] coins, and
+A 30-day  pass is sold for 'COST'[2] coins.
+The passes allow for many days of consecutive travel.
+Your task is to help the Ninja to find the minimum number of coins required to complete his tour. For example,
+If Ninja gets a 7-day pass on day 2, then he can travel for 7 days: 2, 3, 4, 5, 6, 7, and 8.
+Detailed explanation ( Input/output format, Notes, Images )
+Constraints:
+1 <= T <= 10
+1 <= N <= 365
+1 <= DAYS[i] <= 365
+
+Time Limit: 1 sec
+Sample Input 1:
+2
+2 
+2 5
+1 4 25    
+7
+1 3 4 5 7 8 10
+2 7 20
+Sample Output 1:
+2
+11
+Explanation For sample input 1:
+For the first test case, 
+On Day 2, Ninja will buy a 1-day pass with 1 coin.
+On Day 5, Ninja will buy a 1-day pass with 1 coin.
+In total, Ninja will spend 2 coins. Hence the answer is 2.
+
+For the second test case,
+On Day 1, Ninja will buy a 1-day pass with 2 coins.
+On Day 3, Ninja will buy a 7-day pass with 7 coins valid for days 3,4,5...9.
+On Day 10, Ninja will buy a 1-day pass with 2 coins.
+In total, Ninja will spend 11 coins. Hence the answer is 11.
+Sample Input 2:
+2
+6
+1 4 6 7 8 20
+2 7 15
+12
+1 2 3 4 5 6 7 8 9 10 30 31
+2 7 15 
+
+
+int solve(int n,vector<int>&days,vector<int>&cost,int index) {
+    if(index >=n)
+    {
+        return  0;
+    }
+    int options1=cost[0]+solve(n, days, cost,  index+1);
+
+    int i;
+    for(i=index;i<n && days[i] < days[index]+7;i++);
+    int options2=cost[1]+solve(n,days,cost,i);
+
+    for(i=index;i<n&&days[i] <days[index]+30;i++);
+    int options3=cost[2]+solve(n,days,cost,i);
+
+    return  min(options1,min(options2,options3));
+}
+
+int solveMemo(int n,vector<int>&days,vector<int>&cost,int index,vector<int>&dp) {
+    if(index >=n)
+    {
+        return  0;
+    }
+    if(dp[index]!=-1){
+        return  dp[index];
+    }
+    int options1=cost[0]+solveMemo(n, days, cost,  index+1,dp);
+        
+     int i;
+    for(i=index;i<n && days[i] < days[index]+7;i++);
+    int options2=cost[1]+solveMemo(n,days,cost,i,dp);
+   
+     for(i=index;i<n&&days[i] <days[index]+30;i++);
+    int options3=cost[2]+solveMemo(n,days,cost,i,dp);
+     dp[index]=min(options1,min(options2,options3));
+   return  dp[index];
+}
+
+
+
+int solveTab(int n,vector<int>&days,vector<int>&cost){
+  vector<int>dp(n+1,INT_MAX);
+  dp[n]=0;
+
+  for (int k = n-1; k>=0; k--) {
+        int options1 = cost[0] + dp[k + 1];
+        int i;
+        for (i = k;i<n && days[i]<days[k] + 7; i++)
+        int options2 =cost[1]+ dp[i];
+        for (i = k; i < n && days[i] +days[k] + 30; i++)
+        int options3 =cost[2] + dp[i];
+        dp[k]=min(options1, min(options2, options3));
+  }
+   return dp[0];
+}
+int minimumCoins(int n, vector<int> days, vector<int> cost)
+{
+  /*
+
+     vector<int>dp(n+1,-1);
+    return  solveMemo(n, days, cost, 0,dp);*/
+    // Write your code here.
+ return  solveTab( n, days, cost );
+}
+
+#2 Dice throw
+Given n dice each with m faces. Find the number of ways to get sum x which is the summation of values on each face when all the dice are thrown.
+
+Example:
+
+Input: m = 6, n = 3, x = 12
+Output: 25
+Explanation: There are 25 total ways to get the Sum 12 using 3 dices with faces from 1 to 6.
+Input: m = 2, n = 3, x = 6
+Output: 1
+Explanation: There is only 1 way to get the Sum 6 using 3 dices with faces from 1 to 2. All the dices will have to land on 2.
+Expected Time Complexity: O(m*n*x)
+Expected Auxiliary Space: O(n*x)
+
+Constraints:
+1 <= m,n,x <= 50
+
+//{ Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// } Driver Code Ends
+class Solution {
+  public:
+  
+  long long solve(int dice,int face,int target)
+  {
+       if(target<0)
+        return 0;
+        if(dice == 0 && target!=0)
+        {
+            return 0;
+        }
+        
+        if(target== 0 && dice!=0)
+        {
+            return 0;
+        }
+        if(dice==0 && target ==0)
+        
+            return 1;
+        
+        long long ans=0;
+        
+        for(int i=1;i<=target;i++)
+        {
+            ans=ans+solve(dice-1,face,target-i);
+        }
+        return ans;
+  }
+  
+   long long solveMemo(int dice,int face,int target,vector<vector<long long int>>&dp)
+  {
+       if(target<0)
+        return 0;
+        if(dice == 0 && target!=0)
+        {
+            return 0;
+        }
+        
+        if(target== 0 && dice!=0)
+        {
+            return 0;
+        }
+        if(dice==0 && target ==0)
+        {
+            return 1;
+        }
+        if(dp[dice][target]!=-1)
+        return dp[dice][target];
+        long long ans=0;
+        
+        for(int i=1;i<=min(face,target);i++)
+        {
+            ans=ans+solveMemo(dice-1,face,target-i,dp);
+        }
+        return dp[dice][target]=ans;
+  }
+    
+        long long noOfWays(int m, int n, int x) {
+        vector<vector<long long int >>dp(n+1,vector<long long>(x+1,-1));
+       return solveMemo(n,m,x,dp);
+    }
+};
+
+//{ Driver Code Starts.
+int main() {
+    string ts;
+    getline(cin, ts);
+    int t = stoi(ts);
+    while (t--) {
+        string ts;
+        getline(cin, ts);
+        stringstream ss(ts);
+        int number;
+        int f = 0;
+        int m, n, x;
+        while (ss >> number) {
+            if (f == 0)
+                m = number;
+            else if (f == 1)
+                n = number;
+            else
+                x = number;
+            f++;
+        }
+
+        // cin>>M>>N>>X;
+
+        Solution ob;
+        cout << ob.noOfWays(m, n, x) << endl;
+    }
+    return 0;
+}
+// } Driver Code Ends
