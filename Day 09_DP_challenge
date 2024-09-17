@@ -1,0 +1,157 @@
+96. Unique Binary Search Trees
+
+Given an integer n, return the number of structurally unique BST's (binary search trees) which has exactly n nodes of unique values from 1 to n.
+
+ 
+
+Example 1:
+
+
+Input: n = 3
+Output: 5
+Example 2:
+
+Input: n = 1
+Output: 1
+ 
+
+Constraints:
+
+1 <= n <= 19
+class Solution {
+public:
+   int solve(int n,vector<int>&dp)
+   {
+     if(n<=1)
+        return 1;
+
+        if(dp[n]!=-1)
+        return dp[n];
+        int ans=0;
+        for(int i=1;i<=n;i++)
+        {
+            ans+=solve(i-1,dp) * solve(n-i,dp);
+        }
+        return dp[n]=ans;
+   }
+
+    int fun(int n,vector<int>&dp){
+        if(n<=1){
+            return 1;
+        }
+        if(dp[n]!=-1){
+            return dp[n];
+        }
+        int ans=0;
+        for(int i=1;i<=n;i++){
+            ans+=fun(i-1,dp)*fun(n-i,dp);
+        }
+        return dp[n]=ans;
+    }
+    int numTrees(int n) {
+        vector<int>dp(n+1,-1);
+        return fun(n,dp);
+    }
+
+};
+
+#801. Minimum Swaps To Make Sequences Increasing
+You are given two integer arrays of the same length nums1 and nums2. In one operation, you are allowed to swap nums1[i] with nums2[i].
+
+For example, if nums1 = [1,2,3,8], and nums2 = [5,6,7,4], you can swap the element at i = 3 to obtain nums1 = [1,2,3,4] and nums2 = [5,6,7,8].
+Return the minimum number of needed operations to make nums1 and nums2 strictly increasing. The test cases are generated so that the given input always makes it possible.
+
+An array arr is strictly increasing if and only if arr[0] < arr[1] < arr[2] < ... < arr[arr.length - 1].
+
+ 
+
+Example 1:
+
+Input: nums1 = [1,3,5,4], nums2 = [1,2,3,7]
+Output: 1
+Explanation: 
+Swap nums1[3] and nums2[3]. Then the sequences are:
+nums1 = [1, 3, 5, 7] and nums2 = [1, 2, 3, 4]
+which are both strictly increasing.
+Example 2:
+
+Input: nums1 = [0,3,5,8,9], nums2 = [2,1,4,6,9]
+Output: 1
+
+class Solution {
+public:
+/*
+    int solve(vector<int>&nums1,vector<int>&nums2,int index,bool swapped)
+    {
+        if(index == nums1.size())
+        return 0;
+        int ans=INT_MAX;
+
+        int prev1=nums1[index-1];
+        int prev2=nums2[index-1];
+
+        if(swapped)
+        {
+            swap(prev1,prev2);
+        }
+
+        if(nums1[index]>prev1 && nums2[index]>prev2)
+        {
+            ans=solve(nums1,nums2,index+1,0);
+        }
+        if(nums1[index]>prev2 && nums2[index]>prev1)
+        {
+            ans=min(ans,1+solve(nums1,nums2,index+1,1));
+
+        }
+        return ans;
+    }
+    int minSwap(vector<int>& nums1, vector<int>& nums2) {
+        nums1.insert(nums1.begin(),-1);
+        nums2.insert(nums2.begin(),-1);
+       
+        bool swapped=0;
+        return solve(nums1,nums2,swapped);
+    }
+};
+*/
+
+
+
+    int solve(vector<int>& nums1, vector<int>& nums2, int index, bool swapped) {
+        if (index == nums1.size())
+            return 0;
+        
+        int ans = INT_MAX;
+    
+        int prev1 = nums1[index - 1];
+        int prev2 = nums2[index - 1];
+
+        if (swapped) {
+            swap(prev1, prev2);
+        }
+        if (nums1[index] > prev1 && nums2[index] > prev2) {
+            ans = solve(nums1, nums2, index + 1, false);
+        }
+        if (nums1[index] > prev2 && nums2[index] > prev1) {
+            ans = min(ans, 1 + solve(nums1, nums2, index + 1, true));
+        }
+        
+        return ans;
+    }
+    
+    int minSwap(vector<int>& nums1, vector<int>& nums2) {
+        nums1.insert(nums1.begin(), -1);
+        nums2.insert(nums2.begin(), -1);
+        bool swapped = false;
+        return solve(nums1, nums2, 1, swapped);
+    }
+};
+
+ 
+
+Constraints:
+
+2 <= nums1.length <= 105
+nums2.length == nums1.length
+0 <= nums1[i], nums2[i] <= 2 * 105
